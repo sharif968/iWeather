@@ -6,7 +6,7 @@ import { WeatherContext } from "../../context";
 
 export default function WeatherHeadline() {
   const { weatherData } = useContext(WeatherContext);
-
+console.log(weatherData)
   return (
     <div>
       <div className="max-md:flex items-center justify-between md:-mt-10">
@@ -17,11 +17,11 @@ export default function WeatherHeadline() {
           </h1>
           <div className="flex items-center space-x-4 md:mb-4">
             <img src={PinIcon} alt="pin" />
-            <h2 className="text-2xl lg:text-[50px]">{weatherData.location}</h2>
+            <h2 className="text-2xl lg:text-[50px]">{weatherData.city}</h2>
           </div>
         </div>
       </div>
-      <p className="text-sm lg:text-lg">06:09 - Sunday, 9 Dec ‘23</p>
+      <p className="text-sm lg:text-lg">{weatherData.country}</p>
     </div>
   );
 }

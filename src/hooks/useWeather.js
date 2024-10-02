@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 const useWeather = () => {
   const [weatherData, setWeatherData] = useState({
-    location: "",
-    climate: "",
+    city: "",
+    condition: "",
     temperature: "",
     humidity: "",
     wind: "",
     maxTemperature: "",
     minTemperature: "",
-    time: "",
+    country: "",
     cloudPercentage: "",
     longitude: "",
     latitude: "",
@@ -19,51 +19,44 @@ const useWeather = () => {
   });
   const [error, setError] = useState(null);
 
-  const fetchWeatherData = async (latitude, longitude) => {
-    try {
-      setLoading({ state: true, message: "Fetching weather data..." });
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${
-          import.meta.env.VITE_WEATHER_API_KEY
-        }&units=metric`
-      );
-      if (!response.ok) {
-        const errorMassage = `An error has occured: ${response.status}`;
-        throw new Error(errorMassage);
-      }
-      const data = await response.json();
-      const updatedWeatherData = {
-        ...weatherData,
-        location: data?.name,
-        climate: data?.weather[0]?.main,
-        temperature: data?.main?.temp,
-        humidity: data?.main?.humidity,
-        wind: data?.wind?.speed,
-        maxTemperature: data?.main?.temp_max,
-        minTemperature: data?.main?.temp_min,
-        time: data?.dt,
-        cloudPercentage: data?.clouds?.all,
-        longitude: longitude,
-        latitude: latitude,
-      };
-      setWeatherData(updatedWeatherData);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading({
-        ...loading,
-        state: false,
-        message: "",
-      });
-    }
-  };
-
   useEffect(() => {
-    setLoading({ state: true, message: "Finding your location..." });
-    navigator.geolocation.getCurrentPosition(function (position) {
-      fetchWeatherData(position.coords.latitude, position.coords.longitude);
-    });
+    const fetchWeatherData = async (id) => {
+      try {
+        // setLoading({ state: true, message: "Fetching weather data..." });
+        const response = await fetch(
+          ` https://freetestapi.com/api/v1/weathers/${id}`
+        );
+        const data = await response.json();
+        console.log("🚀 ~ fetchWeatherData ~ data:", data);
+
+        const updatedWeatherData = {
+          city: data?.city,
+          country: data?.country,
+          condition: data?.weather_description,
+          temperature: data?.temperature,
+          humidity: data?.humidity,
+          wind: data?.wind_speed,
+          maxTemperature: data?.temperature,
+          minTemperature: data?.temperature,
+          cloudPercentage: data?.humidity,
+          longitude: data?.longitude,
+          latitude: data?.latitude,
+        };
+        setWeatherData(updatedWeatherData);
+        setLoading({ state: false, message: "" });
+      } catch (error) {
+        console.log("🚀 ~ fetchWeatherData ~ error:", error);
+        setError(error);
+      } finally {
+        setLoading({
+          state: false,
+          message: "",
+        });
+      }
+    };
+    fetchWeatherData(1);
   }, []);
+
   return { weatherData, loading, error };
 };
 export default useWeather;
